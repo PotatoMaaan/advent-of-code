@@ -1,16 +1,11 @@
 fn main() {
     let input = include_str!("../input_rr");
+    let input = input.chars().collect::<Vec<_>>();
 
-    let lex = Lexer {
-        inner: input.chars().collect(),
-        pos: 0,
-        peek_pos: 0,
-    };
-
-    let part1 = part1(lex.clone());
+    let part1 = part1(Lexer::new(&input));
     dbg!(&part1);
 
-    let part2 = part2(lex);
+    let part2 = part2(Lexer::new(&input));
     dbg!(&part2);
 }
 
@@ -93,13 +88,21 @@ fn part2(mut lex: Lexer) -> u32 {
 }
 
 #[derive(Debug, Clone)]
-struct Lexer {
-    inner: Vec<char>,
+struct Lexer<'a> {
+    inner: &'a [char],
     pos: usize,
     peek_pos: usize,
 }
 
-impl Lexer {
+impl<'a> Lexer<'a> {
+    fn new(input: &'a [char]) -> Self {
+        Self {
+            inner: input,
+            pos: 0,
+            peek_pos: 0,
+        }
+    }
+
     fn next(&mut self) -> Option<char> {
         let x = self.inner.get(self.pos).copied();
         self.pos += 1;
