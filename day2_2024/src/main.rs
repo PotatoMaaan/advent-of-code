@@ -1,5 +1,9 @@
+use std::time::Instant;
+
 fn main() {
-    let input = include_str!("../input_rr");
+    let input = include_str!("../input_bb");
+    let start = Instant::now();
+
     let reports = input
         .lines()
         .map(|x| {
@@ -8,11 +12,16 @@ fn main() {
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
+    println!("parsing: {:?}", start.elapsed());
 
+    let start = Instant::now();
     let part1 = part1(&reports);
+    println!("part1: {:?}", start.elapsed());
     dbg!(&part1);
 
+    let start = Instant::now();
     let part2 = part2(&reports);
+    println!("part2: {:?}", start.elapsed());
     dbg!(&part2);
 }
 

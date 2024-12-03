@@ -11,8 +11,8 @@ fn main() {
         })
         .collect::<(Vec<_>, Vec<_>)>();
 
-    // let part1 = part1(left, right);
-    // dbg!(&part1);
+    let part1 = part1(left.clone(), right.clone());
+    dbg!(&part1);
     let part2 = part2(left, right);
     dbg!(&part2);
 }
