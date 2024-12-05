@@ -1,30 +1,37 @@
+use std::time::Instant;
+
 fn main() {
-    let input = include_str!("../input_rr");
+    let input = include_str!("../input_bb");
     let input = input.chars().collect::<Vec<_>>();
 
+    let start = Instant::now();
     let part1 = part1(Lexer::new(&input));
     dbg!(&part1);
+    println!("part1 took {:.2?}", start.elapsed());
 
+    let start = Instant::now();
     let part2 = part2(Lexer::new(&input));
     dbg!(&part2);
+    println!("part2 took {:.2?}", start.elapsed());
 }
 
 fn part1(mut lex: Lexer) -> u32 {
     let mut collector = Vec::new();
+    let mut scratchspace = String::with_capacity(3);
 
     'parser: while let Some(c) = lex.next() {
         lex.reset_peek();
 
         match (c, lex.peek::<3>()) {
             ('m', Some(['u', 'l', '('])) => {
-                let Some((num1, next)) = lex.parse_num() else {
+                let Some((num1, next)) = lex.parse_num(&mut scratchspace) else {
                     continue 'parser;
                 };
                 if next != ',' {
                     continue 'parser;
                 }
 
-                let Some((num2, next)) = lex.parse_num() else {
+                let Some((num2, next)) = lex.parse_num(&mut scratchspace) else {
                     continue 'parser;
                 };
                 if next != ')' {
@@ -43,6 +50,7 @@ fn part1(mut lex: Lexer) -> u32 {
 
 fn part2(mut lex: Lexer) -> u32 {
     let mut collector = Vec::new();
+    let mut scratchspace = String::with_capacity(3);
 
     let mut enabled = true;
     'parser: while let Some(c) = lex.next() {
@@ -54,14 +62,14 @@ fn part2(mut lex: Lexer) -> u32 {
                     continue 'parser;
                 }
 
-                let Some((num1, next)) = lex.parse_num() else {
+                let Some((num1, next)) = lex.parse_num(&mut scratchspace) else {
                     continue 'parser;
                 };
                 if next != ',' {
                     continue 'parser;
                 }
 
-                let Some((num2, next)) = lex.parse_num() else {
+                let Some((num2, next)) = lex.parse_num(&mut scratchspace) else {
                     continue 'parser;
                 };
                 if next != ')' {
@@ -133,21 +141,21 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn parse_num(&mut self) -> Option<(u32, char)> {
-        let mut collector = String::new();
+    fn parse_num(&mut self, scratchspace: &mut String) -> Option<(u32, char)> {
+        scratchspace.clear();
         let last = loop {
             let Some(c) = self.peek_single() else {
                 return None;
             };
 
             if c.is_numeric() {
-                collector.push(c);
+                scratchspace.push(c);
             } else {
                 break c;
             }
         };
 
-        collector.parse::<u32>().ok().map(|x| (x, last))
+        scratchspace.parse::<u32>().ok().map(|x| (x, last))
     }
 
     fn reset_peek(&mut self) {
